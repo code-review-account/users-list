@@ -5,7 +5,6 @@ const PageWraper = () => {
 
    const [ usersData, setUsersData ] = useState([])
    const [ exchange, setExchange ] = useState([])
-   
 
    useEffect(() => {
       const getData = async () => {
@@ -14,11 +13,11 @@ const PageWraper = () => {
 
          setUsersData(users)
          setExchange(exchangeData.rates)
-         console.log('usersData', usersData)
-         console.log('usersData', exchange)
+         console.log('users', users)
       }
       getData()
    }, [])
+
 
    const getAge = number => {
       const dateOfBirth = new Date(number),
@@ -47,26 +46,41 @@ const PageWraper = () => {
       return Math.floor(height / 100) + 'м ' + Math.round(height % 100) + 'см'
    }
 
+   const removeUser = e => {
+      let row = +(e.currentTarget.dataset.id)
+      tbody.filter((user) => {
+         return user.number !== row
+      })
+      // console.log('usersData', tbody)
+   }
+
    const thead = [
       {
-
+         type: 'checkbox',
+         checked: false
       },
       {
+         type: 'text',
          title: '№',
       },
       {
+         type: 'text',
          title: 'ФИО',
       },
       {
+         type: 'text',
          title: 'Возраст (Лет)',
       },
       {
+         type: 'text',
          title: 'Рост',
       },
       {
+         type: 'text',
          title: 'Вес',
       },
       {
+         type: 'text',
          title: 'Зарплата',
       },
       {
@@ -76,28 +90,38 @@ const PageWraper = () => {
 
    const tbody = []
 
-   usersData.map((user, idx) => {
-      tbody.push({
-         chekbox: 'c',
-         number: ++idx,
-         name: user.first_name + ' ' + user.last_name,
-         age: getAge(user.date_of_birth),
-         height: parsHeight(user.height),
-         weight: Math.round(user.weight / 2.20462) + ' кг',
-         salary: '$' + Math.round(user.salary * exchange.USD),
-         buttons: [
-            {
-               type: 'edit',
+   const parsData = data => {
+      data.map((user, idx) => {
+         tbody.push({
+            chekbox: {
+               checked: false,
             },
-            {
-               type: 'delete',
-            },
-
-         ]
-      })
-   })
+            number: ++idx,
+            name: user.first_name + ' ' + user.last_name,
+            age: getAge(user.date_of_birth),
+            height: parsHeight(user.height),
+            weight: Math.round(user.weight / 2.20462) + ' кг',
+            salary: '$' + Math.round(user.salary * exchange.USD),
+            buttons: [
+               {
+                  type: 'edit',
+               },
+               {
+                  type: 'delete',
+                  handler: removeUser
+               },
    
-   return <PageView thead={thead} tbody={tbody} />
+            ]
+         })
+      })
+   }
+   parsData(usersData)
+   
+   useEffect(() => {
+      parsData(usersData)
+   }, [usersData])
+   
+   return <PageView thead={thead} tbody={tbody} setUsersData={setUsersData} />
 }
 
 export default PageWraper
