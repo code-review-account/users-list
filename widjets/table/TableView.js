@@ -1,58 +1,5 @@
-import styled from 'styled-components'
 import { svgSprite } from './components/svgSprite'
-
-const Table = styled.table`
-   width: 100%;
-   border-spacing: 0;
-   border-radius: 6px;
-   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
-   margin-bottom: 24px;
-   padding-bottom: 16px;
-`
-const THead = styled.thead`
-   background-color: #f0f0f0;
-   border-radius: 6px;
-`
-const TBody = styled.tbody`
-
-`
-const Th = styled.th`
-   height: 48px;
-   text-align: left;
-
-   &:first-child {
-      text-align: center;
-      width: 60px;
-   }
-`
-const Tr = styled.tr`
-   &:nth-child(even) {
-      background-color: #fafafa;
-   }
-`
-const Td = styled.td`
-   height: 48px;
-   &:first-child {
-      text-align: center;
-      width: 60px;
-   }
-   &:last-child {
-      text-align: right;
-   }
-`
-export const TableBtn = styled.button`
-   border: none;
-   background: transparent;
-   width: 25px;
-   height: 25px;
-   cursor: pointer;
-   margin-right: 26px;
-   padding: 0;
-
-   &:hover {
-      color: red;
-   }
-`
+import { Table, THead, TBody, Th, Tr, Td, TableBtn, CheckBox } from './components/components'
 
 const TableView = ({
    thead,
@@ -64,9 +11,22 @@ const TableView = ({
       <Table>
          <THead>
             <tr>
-               { thead && thead.map(th => {
-                  return <Th key={Math.random() * Date.now()}>{ th.title }</Th> 
-               }) }
+               { 
+                  thead && thead.map(th => {
+                     switch (th.type) {
+                        case 'checkbox':
+                           return (
+                              <Th key={Math.random() * Date.now()}>
+                                 <CheckBox checked={th.checked}>
+                                    <div></div>
+                                 </CheckBox>
+                              </Th>
+                           )
+                        default: 
+                        return <Th key={Math.random() * Date.now()}>{ th.title }</Th> 
+                     }
+                  })
+               }
             </tr>
          </THead>
          <TBody>
@@ -76,28 +36,38 @@ const TableView = ({
                      <Tr key={Math.random() * Date.now()}>
                         {
                            Object.keys(tr).map(td => {
-                              if (td === 'buttons') {
-                                 return (
-                                    <Td key={Math.random() * Date.now()}>
-                                       { tr[td].map(btn => {
-                                          return (
-                                             <TableBtn>
-                                                {svgSprite(btn.type)}
-                                             </TableBtn>
-                                          )
-                                       })}
-                                    </Td>
-                                 )
+                              switch (td) {
+                                 case 'buttons' :
+                                    return (
+                                       <Td key={Math.random() * Date.now()}>
+                                          { tr[td].map(btn => {
+                                             return (
+                                                <TableBtn onClick={btn?.handler} data-id={tr.number}> 
+                                                   {svgSprite(btn.type)}
+                                                </TableBtn>
+                                             )
+                                          })}
+                                       </Td>
+                                    )
+                                 case 'chekbox':
+                                    return (
+                                       <Td key={Math.random() * Date.now()}>
+                                          <CheckBox checked={tr[td].checked}>
+                                             <div></div>
+                                          </CheckBox>
+                                       </Td>
+                                    )
+                                 default: 
+                                 return <Td key={Math.random() * Date.now()}>{ tr[td] }</Td>
                               }
-                              return <Td key={Math.random() * Date.now()}>{ tr[td] }</Td>
                            })
                         }
                      </Tr>
                   )
                }) 
-               : <Tr>
-                  Нет записей
-               </Tr>
+               :  <Tr>
+                     <Td as="td" colspan="999">Нет записей</Td>
+                  </Tr>
             }
          </TBody>
       </Table>

@@ -3,7 +3,6 @@ import TableView from './TableView'
 
 const TableWraper = ({ thead, tbody }) => {
 
-
    return <TableView thead={thead} tbody={tbody} />
 }
 
